@@ -1,7 +1,7 @@
 package main
 
 import (
-	"net/http"
+	"balance_bay/src/controllers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,9 +11,7 @@ func main() {
 
 	public := r.Group("/api")
 
-	public.POST("/register", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"data": "This is the register endpoint!"})
-	})
+	public.POST("/register", controllers.Register)
 
 	r.Run(":8080")
 }
