@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"balance_bay/src/models"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -19,5 +20,17 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "validated!"})
+	u := models.User{}
+
+	u.Username = input.Username
+	u.Password = input.Password
+
+	_,err := u.SaveUser()
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message":"registration success"})
 }
