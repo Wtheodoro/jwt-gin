@@ -2,6 +2,7 @@ package models
 
 import (
 	"balance_bay/utils/token"
+	"errors"
 	"html"
 	"strings"
 
@@ -13,6 +14,24 @@ type User struct {
 	gorm.Model
 	Username string `gorm:"size:255;not null;unique" json:"username"`
 	Password string `gorm:"size:255;not null" json:"password"`
+}
+
+func GetUserByID(uid uint) (User,error) {
+
+	var u User
+
+	if err := DB.First(&u,uid).Error; err != nil {
+		return u,errors.New("User not found!")
+	}
+
+	u.PrepareGive()
+	
+	return u,nil
+
+}
+
+func (u *User) PrepareGive(){
+	u.Password = ""
 }
 
 func (u *User) SaveUser() (*User, error) {

@@ -2,10 +2,46 @@ package controllers
 
 import (
 	"balance_bay/src/models"
+	"balance_bay/utils/token"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
+
+type UserResponse struct {
+	ID        uint      `json:"ID"`
+	CreatedAt time.Time `json:"CreatedAt"`
+	UpdatedAt time.Time `json:"UpdatedAt"`
+	DeletedAt *time.Time `json:"DeletedAt,omitempty"`
+	Username  string    `json:"username"`
+}
+
+func CurrentUser(c *gin.Context){
+
+	user_id, err := token.ExtractTokenID(c)
+	
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	
+	u,err := models.GetUserByID(user_id)
+	
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	userResponse := UserResponse{
+		ID:        u.ID,
+		CreatedAt: u.CreatedAt,
+		UpdatedAt: u.UpdatedAt,
+		Username:  u.Username,
+}
+
+	c.JSON(http.StatusOK, gin.H{"message": "success","data": userResponse})
+}
 
 type RegisterInput struct {
 	Username string `json:"username" binding:"required"`
